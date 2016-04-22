@@ -4,13 +4,16 @@ import whois
 def main():
 	parser = argparse.ArgumentParser(description='Extract Whois info about domains')
 	parser.add_argument('domain', metavar='N', nargs='+', help='Domains for Whois')
+	parser.add_argument('--short', dest='short', action='store_true')
+	parser.set_defaults(short=False)
 	file = open('whois.txt', 'w')
 	args = parser.parse_args()
 
 	for domain in args.domain:
  		w = whois.whois(domain)
-		max_date = max(w.updated_date)
-		pos = w.updated_date.index(max_date)
+		if(isinstance(w.updated_date, list)):
+			max_date = max(w.updated_date)
+			pos = w.updated_date.index(max_date)
 		print "Dominio: %s" %domain
 		file.write("Dominio: %s \n" %domain)
 		if(isinstance(w.creation_date, list)):
@@ -39,12 +42,13 @@ def main():
 		file.write("Propietario: %s\n" %org)
 		print "----------------------"
 		file.write("---------------------- \n")
-		print "Whois: "
-		file.write("Whois: \n")
-		print w.text
-		file.write("%s \n" %w.text)
-		print ("\n\n")
-		file.write("\n\n")
+		if(args.short == False):
+			print "Whois: "
+                	file.write("Whois: \n")
+                	print w.text
+                	file.write("%s \n" %w.text)
+                	print ("\n\n")
+                	file.write("\n\n")
 	file.close()
 
 
